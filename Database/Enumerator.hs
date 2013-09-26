@@ -116,6 +116,8 @@ import Prelude hiding (catch)
 import Data.Dynamic
 import Data.IORef
 import Data.Time
+import Data.Maybe (fromMaybe, isNothing)
+import Control.Monad (liftM)
 import Control.Monad.Trans (liftIO)
 import Control.Exception
 import Control.Monad.Fix
@@ -141,7 +143,7 @@ type IterAct m seedType = seedType -> m (IterResult seedType)
 -- monad.
 
 catchDB :: CaughtMonadIO m => m a -> (IE.DBException -> m a) -> m a
-catchDB action handler = gcatch action $ handler
+catchDB = gcatch
 
 
 
@@ -156,7 +158,7 @@ basicDBExceptionReporter e = liftIO (putStrLn (formatDBException e))
 
 reportRethrow :: CaughtMonadIO m => IE.DBException -> m a
 --reportRethrow e = basicDBExceptionReporter e >> IE.throwDB e
-reportRethrow e = reportRethrowMsg "" e
+reportRethrow = reportRethrowMsg ""
 
 -- | Same as reportRethrow, but you can prefix some text to the error
 -- (perhaps to indicate which part of your program raised it).
@@ -168,11 +170,11 @@ reportRethrowMsg m e = liftIO (putStr m) >> basicDBExceptionReporter e >> IE.thr
 
 formatDBException :: IE.DBException -> String
 formatDBException (IE.DBError (ssc, sssc) e m) =
-  ssc ++ sssc ++ " " ++ (show e) ++ ": " ++ m
+  ssc ++ sssc ++ " " ++ show e ++ ": " ++ m
 formatDBException (IE.DBFatal (ssc, sssc) e m) =
-  ssc ++ sssc ++ " " ++ (show e) ++ ": " ++ m
+  ssc ++ sssc ++ " " ++ show e ++ ": " ++ m
 formatDBException (IE.DBUnexpectedNull r c) =
-  "Unexpected null in row " ++ (show r) ++ ", column " ++ (show c) ++ "."
+  "Unexpected null in row " ++ show r ++ ", column " ++ show c ++ "."
 formatDBException (IE.DBNoData) = "Fetch: no more data."
 
 
@@ -185,7 +187,7 @@ catchDBError n action handler = catchDB action
   (\dberror ->
     case dberror of
       IE.DBError ss e m | e == n -> handler dberror
-      _ | otherwise -> IE.throwDB dberror
+      _                          -> IE.throwDB dberror
   )
 
 -- | Analogous to 'catchDBError', but ignores specific errors instead
@@ -225,7 +227,7 @@ instance IE.ISession si => CaughtMonadIO (DBM mark si) where
 withSession :: (Typeable a, IE.ISession sess) => 
     IE.ConnectA sess -> (forall mark. DBM mark sess a) -> IO a
 withSession (IE.ConnectA connecta) m = 
-  bracket (connecta) (IE.disconnect) (runReaderT (unDBM m))
+  bracket connecta IE.disconnect (runReaderT (unDBM m))
 
 
 -- | Persistent database connections. 
@@ -317,7 +319,7 @@ executeCommand stmt = DBM( ask >>= \s -> lift $ IE.executeCommand s stmt )
 -- If there is a problem, an exception will be raised.
 
 execDDL :: IE.Command stmt s => stmt -> DBM mark s ()
-execDDL stmt = executeCommand stmt >> return ()
+execDDL stmt = void (executeCommand stmt)
 
 -- | Returns the number of rows affected.
 
@@ -339,7 +341,7 @@ inquire key = DBM( ask >>= \s -> lift $ IE.inquire key s )
 executePreparation :: IE.IPrepared stmt sess bstmt bo =>
        IE.PreparationA sess stmt -> DBM mark sess (IE.PreparedStmt mark stmt)
 executePreparation (IE.PreparationA action) =
-    DBM( ask >>= \sess -> lift $ action sess >>= return . IE.PreparedStmt)
+    DBM( ask >>= \sess -> lift $ liftM IE.PreparedStmt (action sess))
 
 data NextResultSet mark stmt = NextResultSet (IE.PreparedStmt mark stmt)
 data RefCursor a = RefCursor a
@@ -443,8 +445,7 @@ instance (IE.DBType a q b, MonadIO m) =>
     v <- liftIO $ IE.fetchCol q buf
     fn v seed
   allocBuffers q _ n = liftIO $ 
-        sequence [IE.allocBufferFor (undefined::a) q n]
-
+        sequence [IE.allocBufferFor (undefined :: a) q n]
 
 -- |This instance of the class implements the starting and continuation cases.
 
@@ -514,9 +515,9 @@ doQueryMaker stmt iteratee = do
         let
           handle seed True = iterApply query buffers seed iteratee
             >>= handleIter
-          handle seed False = (finaliser) >> return seed
+          handle seed False = finaliser >> return seed
           handleIter (Right seed) = self iteratee seed
-          handleIter (Left seed) = (finaliser) >> return seed
+          handleIter (Left seed) = finaliser >> return seed
         liftIO (IE.fetchOneRow query) >>= handle initialSeed
     return (hFoldLeft, finaliser)
 
@@ -529,7 +530,7 @@ openCursor stmt iteratee seed = do
     let update v = liftIO $ modifyIORef ref (\ (_, f) -> (v, f))
     let
       close finalseed = do
-        liftIO$ modifyIORef ref (\_ -> (finalseed, Nothing))
+        liftIO$ modifyIORef ref (const (finalseed, Nothing))
         finalizer
         return (DBCursor ref)
     let
@@ -537,11 +538,11 @@ openCursor stmt iteratee seed = do
         let
           k fni' seed'' = do
             let k'' flag = if flag then k' fni' seed'' else close seed''
-            liftIO$ modifyIORef ref (\_->(seed'', Just k''))
+            liftIO$ modifyIORef ref (const (seed'', Just k''))
             return seed''
         in do
-          liftIO$ modifyIORef ref (\_ -> (seed', Nothing))
-          do {lFoldLeft k fni seed' >>= update}
+          liftIO$ modifyIORef ref (const (seed', Nothing))
+          lFoldLeft k fni seed' >>= update
           return $ DBCursor ref
     k' iteratee seed
 
@@ -575,7 +576,7 @@ openCursor stmt iteratee seed = do
 cursorIsEOF :: DBCursor mark (DBM mark s) a -> DBM mark s Bool
 cursorIsEOF (DBCursor ref) = do
   (_, maybeF) <- liftIO $ readIORef ref
-  return $ maybe True (const False) maybeF
+  return $ isNothing maybeF
 
 -- |Returns the results fetched so far, processed by iteratee function.
 
@@ -617,8 +618,8 @@ withCursor ::
   -> seed  -- ^ seed value
   -> (DBCursor mark (DBM mark sess) seed -> DBM mark sess a)  -- ^ action taking cursor parameter
   -> DBM mark sess a
-withCursor stmt iteratee seed action =
-  gbracket (openCursor stmt iteratee seed) cursorClose action
+withCursor stmt iteratee seed =
+  gbracket (openCursor stmt iteratee seed) cursorClose
 
 
 -- Although withTransaction has the same structure as a bracket,
@@ -650,7 +651,7 @@ withTransaction isolation action = do
 ifNull :: Maybe a  -- ^ nullable value
   -> a  -- ^ value to substitute if first parameter is null i.e. 'Data.Maybe.Nothing'
   -> a
-ifNull value subst = maybe subst id value
+ifNull value subst = fromMaybe subst value
 
 
 
