@@ -15,6 +15,7 @@ Only the programmer for a new back-end needs to consult this file.
 
 > {-# LANGUAGE MultiParamTypeClasses #-}
 > {-# LANGUAGE FunctionalDependencies #-}
+> {-# LANGUAGE DeriveDataTypeable #-}
 
 > module Database.InternalEnumerator
 >   (
@@ -37,8 +38,7 @@ Only the programmer for a new back-end needs to consult this file.
 >   ) where
 
 > import Data.Typeable
-> import Control.Exception.Extensible (throw, Exception)
-> import qualified Control.Exception (catch)
+> import Control.Exception (throw, Exception)
 
 > data IsolationLevel =
 >     ReadUncommitted

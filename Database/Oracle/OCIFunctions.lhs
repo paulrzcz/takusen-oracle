@@ -23,22 +23,22 @@ the OCI call, and some text identifying the wrapper function.
 See 'formatErrorCodeDesc' for the set of possible values for the OCI error numbers.
 
 > {-# LANGUAGE ForeignFunctionInterface #-}
+> {-# LANGUAGE DeriveDataTypeable #-}
 
 
 > module Database.Oracle.OCIFunctions where
 
 
-> import Prelude hiding (catch)
+> import Prelude
 > import Database.Oracle.OCIConstants
 > import Database.Util
 > import Foreign
 > import Foreign.C
 > import Control.Monad
-> import Control.Exception.Extensible
+> import Control.Exception
 > import Data.Dynamic
-> import System.Time
 > import Data.Time
-
+> import System.Time
 
 
 |
@@ -579,15 +579,15 @@ direction.
 >   -> IO BindHandle
 > bindOutputByPos err stmt pos (nullIndFPtr, bufFPtr, sizeFPtr) sze sqltype =
 >   alloca $ \bindHdl ->
->   withForeignPtr nullIndFPtr $ \indPtr -> do
->   withForeignPtr sizeFPtr $ \sizePtr -> do
->   withForeignPtr bufFPtr $ \bufPtr -> do
->     rc <- ociBindByPos stmt bindHdl err (fromIntegral pos) bufPtr
->             (fromIntegral sze) (fromIntegral sqltype)
->             indPtr sizePtr nullPtr 0 nullPtr (fromIntegral oci_DEFAULT)
->     testForError rc "bindOutputByPos" ()
->     bptr <- peek bindHdl
->     return bptr
+>     withForeignPtr nullIndFPtr $ \indPtr -> do
+>       withForeignPtr sizeFPtr $ \sizePtr ->
+>         withForeignPtr bufFPtr $ \bufPtr -> do
+>           rc <- ociBindByPos stmt bindHdl err (fromIntegral pos) bufPtr
+>               (fromIntegral sze) (fromIntegral sqltype)
+>               indPtr sizePtr nullPtr 0 nullPtr (fromIntegral oci_DEFAULT)
+>           testForError rc "bindOutputByPos" ()
+>           bptr <- peek bindHdl
+>           return bptr
 
 
 | Fetch a single row into the buffers.

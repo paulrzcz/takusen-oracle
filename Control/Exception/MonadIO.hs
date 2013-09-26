@@ -6,7 +6,7 @@ module Control.Exception.MonadIO
 ) where
 
 import Control.Monad.Trans
-import Control.Exception.Extensible
+import Control.Exception
 import Control.Monad.Reader
 
 
@@ -20,7 +20,7 @@ gtry a = gcatch (liftM Right a) (return . Left)
 gtryJust p a = gcatchJust p (liftM Right a) (return . Left)
 
 instance CaughtMonadIO IO where
-  gcatch = Control.Exception.Extensible.catch
+  gcatch = Control.Exception.catch
   gcatchJust = catchJust
 
 instance CaughtMonadIO m => CaughtMonadIO (ReaderT a m) where

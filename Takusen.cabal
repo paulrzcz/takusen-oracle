@@ -50,13 +50,13 @@ Executable takusen_tests
       , Database.Oracle.Test.Enumerator
       , Database.Oracle.Test.OCIFunctions
       , Control.Exception.MonadIO
-      , Control.Exception.Extensible
       , Foreign.C.UTF8
       , Foreign.C.Test.UTF8
       , Test.MiniUnit
   Build-Depends:  base          >= 4.6   && < 5
                 , mtl
                 , time
+                , old-time
                 , QuickCheck    ==2.*
                 , random
   Extensions: CPP DeriveDataTypeable ScopedTypeVariables
@@ -68,7 +68,6 @@ Executable miniunit_tests
   Main-Is: Test/Main.hs
   Other-modules: 
       Control.Exception.MonadIO
-    , Control.Exception.Extensible
     , Test.MiniUnit
     , Test.MiniUnitTest
   Build-Depends:  base          >= 4.6   && < 5
@@ -96,9 +95,9 @@ Library
   Build-Depends:  base
                 , mtl
                 , time
+                , old-time
   Other-Extensions: CPP DeriveDataTypeable
   Other-modules: 
         Database.InternalEnumerator
-      , Control.Exception.Extensible
       -- Modules in Other-modules are passed to Haddock with --hide=<module-name>.
   Ghc-Prof-Options: -prof -auto-all

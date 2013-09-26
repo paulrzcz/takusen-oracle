@@ -36,17 +36,15 @@ These functions will typically have the same names and intentions,
 but their specific types and usage may differ between DBMS.
 
 
-> {-# OPTIONS -fglasgow-exts #-}
 > {-# LANGUAGE CPP #-}
 > {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 > {-# LANGUAGE OverlappingInstances #-}
 > {-# LANGUAGE UndecidableInstances #-}
-
-> {-  LANGUAGE MultiParamTypeClasses #-}
-> {-  LANGUAGE RankNTypes #-}
-> {-  LANGUAGE FunctionalDependencies #-}
-> {-  LANGUAGE FlexibleInstances #-}
-> {-  LANGUAGE FlexibleContexts #-}
+> {-# LANGUAGE MultiParamTypeClasses #-}
+> {-# LANGUAGE RankNTypes #-}
+> {-# LANGUAGE FunctionalDependencies #-}
+> {-# LANGUAGE FlexibleInstances #-}
+> {-# LANGUAGE FlexibleContexts #-}
 
 
 
@@ -119,12 +117,12 @@ but their specific types and usage may differ between DBMS.
 > import Data.IORef
 > import Data.Time
 > import Control.Monad.Trans (liftIO)
-> import Control.Exception.Extensible
+> import Control.Exception
 > import Control.Monad.Fix
 > import Control.Monad.Reader
 > import Control.Exception.MonadIO
 > import qualified Database.InternalEnumerator as IE
-
+> import System.Time
 
 -----------------------------------------------------------
 

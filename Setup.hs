@@ -132,5 +132,5 @@ configOracle verbose buildtools =
   guardProg sqlplusProgram buildtools $
   guardPath (maybeGetEnv "ORACLE_HOME") "Oracle" verbose $ \path -> do
   let (libDir, incDir) =
-          if isWindows then ("bin", "oci/include") else ("lib", "rdbms/public")
+          if isWindows then ("bin", "oci/include") else ("", "sdk/include") -- ("lib", "rdbms/public")
   makeConfig path libDir incDir

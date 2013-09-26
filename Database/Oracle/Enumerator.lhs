@@ -10,7 +10,6 @@ Portability :  non-portable
 Oracle OCI implementation of Database.Enumerator.
 
 
-> {-# OPTIONS -fglasgow-exts #-}
 > {-# LANGUAGE OverlappingInstances #-}
 > {-# LANGUAGE UndecidableInstances #-}
 
@@ -34,7 +33,7 @@ Oracle OCI implementation of Database.Enumerator.
 > import Foreign
 > import Foreign.C
 > import Control.Monad
-> import Control.Exception.Extensible
+> import Control.Exception
 > import Control.Monad.Trans
 > import Control.Monad.Reader
 > import Data.Char (toLower)
@@ -43,7 +42,6 @@ Oracle OCI implementation of Database.Enumerator.
 > import Data.IORef
 > import Data.Int
 > import Data.Time
-> import System.Time
 > import System.IO (hPutStrLn, stderr)
 
 

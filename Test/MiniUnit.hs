@@ -26,7 +26,7 @@ module Test.MiniUnit
 where
 
 import Control.Exception.MonadIO
-import Control.Exception.Extensible
+import Control.Exception
 import Control.Monad
 import Control.Monad.Trans (liftIO)
 import System.IO.Error (ioeGetErrorString)
