@@ -21,7 +21,7 @@ import System.Directory (canonicalizePath, removeFile)
 import System.Environment (getEnv)
 import System.FilePath (combine, dropFileName, FilePath, pathSeparators)
 import Control.Monad(liftM)
-import Control.Exception (try, catch)
+import Control.Exception (SomeException, try, catch)
 import Data.List (isInfixOf)
 import Data.Maybe (fromJust)
 import Data.Monoid (mconcat)
@@ -48,37 +48,29 @@ To-dos for Takusen:
 
 -}
 
+emptyCatchHandler :: SomeException -> IO ()
+emptyCatchHandler _ = return ()
 
 main = defaultMainWithHooks autoconfUserHooks
   { preConf=preConf, postConf=postConf
-  , hookedPrograms = [pgConfigProgram, odbcConfigProgram, sqlite3Program, sqlplusProgram]
+  , hookedPrograms = [sqlplusProgram]
   }
   where
     preConf :: Args -> ConfigFlags -> IO HookedBuildInfo
     preConf args flags = do
-      try (removeFile "Takusen.buildinfo")
+      catch (removeFile "Takusen.buildinfo") emptyCatchHandler
       return emptyHookedBuildInfo
     postConf :: Args -> ConfigFlags -> PackageDescription -> LocalBuildInfo -> IO ()
     postConf args flags pkgdesc localbuildinfo = do
       let verbose = fromFlag (configVerbosity flags)
       let lbi = libBuildInfo (fromJust (library pkgdesc))
       let buildtools = buildTools lbi
-      sqliteBI <- configSqlite3 verbose buildtools 
-      pgBI <- configPG verbose buildtools
       oraBI <- configOracle verbose buildtools
-      odbcBI <- configOdbc verbose buildtools
-      let bi = mconcat [sqliteBI, pgBI, oraBI, odbcBI, lbi]
+      let bi = mconcat [oraBI, lbi]
       writeHookedBuildInfo "Takusen.buildinfo" (Just bi, [])
 
 
--- ODBCConf.exe - MDAC install actions - command line?
-odbcConfigProgram = simpleProgram "odbcconf" 
--- ODBC Admin console - GUI program
---odbcConfigProgram = simpleProgram "odbcad32"
 sqlplusProgram    = simpleProgram "sqlplus"
-pgConfigProgram   = simpleProgram "pg_config"
-sqlite3Program    = simpleProgram "sqlite3"
-
 
 isWindows = System.Info.os == "mingw32" || System.Info.os == "windows"
 
@@ -100,8 +92,11 @@ makeConfig path libDir includeDir = do
     (emptyBuildInfo
       { extraLibDirs = [stripTrailingSep libDirs], includeDirs = [stripTrailingSep includeDirs] })
 
+nothingForSomeException :: SomeException -> IO (Maybe String)
+nothingForSomeException _ = return Nothing
+
 maybeGetEnv :: String -> IO (Maybe String)
-maybeGetEnv env = catch (liftM Just (getEnv env)) ( const (return Nothing) )
+maybeGetEnv env = catch (liftM Just (getEnv env)) nothingForSomeException
 
 -- Check that the program is in the buildtools.
 -- If it is, then run the action (which should return BuildInfo).
@@ -144,34 +139,3 @@ configOracle verbose buildtools =
   let (libDir, incDir) =
           if isWindows then ("bin", "oci/include") else ("lib", "rdbms/public")
   makeConfig path libDir incDir
-
-configSqlite3 verbose buildtools =
-  guardProg sqlite3Program buildtools $
-    if isWindows
-      then guardPath (programFindLocation sqlite3Program verbose) "Sqlite3" verbose $ \path ->
-        makeConfig (dropFileName path) "" ""
-      else return emptyBuildInfo
-
-configPG verbose buildtools =
-  guardProg pgConfigProgram buildtools $
-  guardPath (programFindLocation pgConfigProgram verbose) "PostgreSQL" verbose $ \pq_config_path -> do
-  lib_dirs <- rawSystemStdout verbose pq_config_path ["--libdir"]
-  inc_dirs <- rawSystemStdout verbose pq_config_path ["--includedir"]
-  inc_dirs_server <- rawSystemStdout verbose pq_config_path ["--includedir-server"]
-  return (emptyBuildInfo
-    { extraLibDirs = words lib_dirs
-    , includeDirs = words inc_dirs ++ words inc_dirs_server
-    })
-
-
--- On Windows the ODBC stuff is in c:\windows\system32, which is always in the PATH.
--- So I think we only need to pass -lodbc32.
--- The include files are already in the ghc/include/mingw folder.
--- FIXME: I don't know how this should look for unixODBC.
-
-configOdbc verbose buildtools | isWindows = do
-  info verbose "Using ODBC: <on Windows => lib already in PATH>"
-  return emptyBuildInfo
-configOdbc verbose buildtools =
-  --info verbose "Using odbc: <on *nix => assume lib already in PATH>"
-  return emptyBuildInfo
