@@ -34,15 +34,11 @@ See this page for useful notes on tagging and releasing:
 
 To-dos for Takusen:
  - Oracle resource leak: Ref Cursors (StmtHandles) not freed
- - Out bind parameters for ODBC
- - Multiple result-sets from ODBC procedure call
  - better result-set <-> iteratee validation. Check column types?
  - use hsc2hs to create #define constants from header files,
    rather than hard-code them.
  - Blob support (and clob?).
- - FreeTDS back-end.
- - POP3 & IMAP back-ends?
-
+ 
  - Unwritten tests:
    * incorrect fold function (doesn't match result-set)
 
@@ -68,7 +64,6 @@ main = defaultMainWithHooks autoconfUserHooks
       oraBI <- configOracle verbose buildtools
       let bi = mconcat [oraBI, lbi]
       writeHookedBuildInfo "Takusen.buildinfo" (Just bi, [])
-
 
 sqlplusProgram    = simpleProgram "sqlplus"
 

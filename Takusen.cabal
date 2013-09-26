@@ -1,4 +1,4 @@
-Name:           Takusen-Oracle
+Name:           takusen-oracle
 Version:        0.9.0
 License:        BSD3
 License-file:   LICENSE
@@ -10,7 +10,7 @@ Homepage:       https://github.com/paulrzcz/takusen-oracle.git
 Package-url:    https://github.com/paulrzcz/takusen-oracle.git
 Category:       Database
 Build-type:     Custom
-Cabal-Version:  >= 1.10
+Cabal-Version:  >= 1.16
 Synopsis:       Database library with left-fold interface for Oracle.
 Description:   
     Takusen-Oracle is a Oracle access library. Like HSQL and HDBC, we support
@@ -30,6 +30,7 @@ Flag buildtests
 
 
 Executable takusen_tests
+  Default-Language: Haskell2010
   If !flag(buildtests)
     Buildable: False
   else
@@ -56,11 +57,12 @@ Executable takusen_tests
   Build-Depends:  base          >= 4.6   && < 5
                 , mtl
                 , time
-                , QuickCheck==1.*
+                , QuickCheck    ==2.*
                 , random
   Extensions: CPP DeriveDataTypeable ScopedTypeVariables
 
 Executable miniunit_tests
+  Default-Language: Haskell2010
   If !flag(buildtests)
     Buildable: False
   Main-Is: Test/Main.hs
@@ -71,10 +73,10 @@ Executable miniunit_tests
     , Test.MiniUnitTest
   Build-Depends:  base          >= 4.6   && < 5
                 , mtl
-  Extensions: CPP DeriveDataTypeable ScopedTypeVariables
+  Other-Extensions: CPP DeriveDataTypeable ScopedTypeVariables
 
 Library
-
+  Default-Language: Haskell2010
   Exposed-modules:
         Database.Enumerator
       , Database.Util
@@ -94,7 +96,7 @@ Library
   Build-Depends:  base
                 , mtl
                 , time
-  Extensions: CPP DeriveDataTypeable
+  Other-Extensions: CPP DeriveDataTypeable
   Other-modules: 
         Database.InternalEnumerator
       , Control.Exception.Extensible
