@@ -20,7 +20,8 @@ import qualified System.Info (os)
 import System.Directory (canonicalizePath, removeFile)
 import System.Environment (getEnv)
 import System.FilePath (combine, dropFileName, FilePath, pathSeparators)
-import System.IO.Error (try)
+import Control.Monad(liftM)
+import Control.Exception (try, catch)
 import Data.List (isInfixOf)
 import Data.Maybe (fromJust)
 import Data.Monoid (mconcat)
@@ -100,8 +101,7 @@ makeConfig path libDir includeDir = do
       { extraLibDirs = [stripTrailingSep libDirs], includeDirs = [stripTrailingSep includeDirs] })
 
 maybeGetEnv :: String -> IO (Maybe String)
-maybeGetEnv env = do
-  catch ( getEnv env >>= return . Just ) ( const (return Nothing) )
+maybeGetEnv env = catch (liftM Just (getEnv env)) ( const (return Nothing) )
 
 -- Check that the program is in the buildtools.
 -- If it is, then run the action (which should return BuildInfo).
@@ -109,16 +109,15 @@ maybeGetEnv env = do
 -- Cabal populates the buildtools list depending on which flags
 -- have been passed to "setup configure".
 guardProg :: Program -> [Dependency] -> IO BuildInfo -> IO BuildInfo
-guardProg prog tools action = do
-  if prog `isElem` tools then action else return emptyBuildInfo
+guardProg prog tools action = if prog `isElem` tools then action else return emptyBuildInfo
   where
-    isElem program buildtools = or (map (match program) buildtools)
-    match program (Dependency (PackageName tool) _) = (programName program) == tool
+    isElem program = any (match program)
+    match program (Dependency (PackageName tool) _) = programName program == tool
 
 -- Run the first action to give a Maybe FilePath.
 -- If this is Nothing then emit a warning about library not found.
 -- Otherwise, run the second action over the FilePath.
-guardPath :: (IO (Maybe FilePath)) -> String -> Verbosity -> (FilePath -> IO BuildInfo) -> IO BuildInfo
+guardPath :: IO (Maybe FilePath) -> String -> Verbosity -> (FilePath -> IO BuildInfo) -> IO BuildInfo
 guardPath pathAction libName verbose resAction = do
   mb <- pathAction
   case mb of
@@ -139,22 +138,22 @@ guardPath pathAction libName verbose resAction = do
 -- Header files are in: $ORACLE_HOME/rdbms/public
 -- Header files are in: $ORACLE_HOME/lib
 
-configOracle verbose buildtools = do
-  guardProg sqlplusProgram buildtools $ do
+configOracle verbose buildtools =
+  guardProg sqlplusProgram buildtools $
   guardPath (maybeGetEnv "ORACLE_HOME") "Oracle" verbose $ \path -> do
   let (libDir, incDir) =
           if isWindows then ("bin", "oci/include") else ("lib", "rdbms/public")
   makeConfig path libDir incDir
 
-configSqlite3 verbose buildtools = do
-  guardProg sqlite3Program buildtools $ do
+configSqlite3 verbose buildtools =
+  guardProg sqlite3Program buildtools $
     if isWindows
-      then guardPath (programFindLocation sqlite3Program verbose) "Sqlite3" verbose $ \path -> do
+      then guardPath (programFindLocation sqlite3Program verbose) "Sqlite3" verbose $ \path ->
         makeConfig (dropFileName path) "" ""
       else return emptyBuildInfo
 
-configPG verbose buildtools = do
-  guardProg pgConfigProgram buildtools $ do
+configPG verbose buildtools =
+  guardProg pgConfigProgram buildtools $
   guardPath (programFindLocation pgConfigProgram verbose) "PostgreSQL" verbose $ \pq_config_path -> do
   lib_dirs <- rawSystemStdout verbose pq_config_path ["--libdir"]
   inc_dirs <- rawSystemStdout verbose pq_config_path ["--includedir"]
@@ -173,6 +172,6 @@ configPG verbose buildtools = do
 configOdbc verbose buildtools | isWindows = do
   info verbose "Using ODBC: <on Windows => lib already in PATH>"
   return emptyBuildInfo
-configOdbc verbose buildtools = do
+configOdbc verbose buildtools =
   --info verbose "Using odbc: <on *nix => assume lib already in PATH>"
   return emptyBuildInfo
