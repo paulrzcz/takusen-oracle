@@ -24,8 +24,10 @@ Extra-tmp-files:
       Database/Oracle/OCIFunctions_stub.c
       Database/Oracle/OCIFunctions_stub.h
 
-
-Description: Oracle OCI backend
+source-repository this
+    type:       git
+    location:   https://github.com/paulrzcz/takusen-oracle.git
+    tag:        0.9.0 
 
 Flag buildtests
   Description: Build test executables
