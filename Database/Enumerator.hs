@@ -112,7 +112,7 @@ module Database.Enumerator
 
   ) where
 
-import Prelude
+import Prelude hiding (catch)
 import Data.Dynamic
 import Data.IORef
 -- import Data.Time

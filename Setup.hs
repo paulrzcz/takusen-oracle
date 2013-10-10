@@ -2,6 +2,7 @@
 
 -- setup configure -fodbc -foracle -fpostgres -fsqlite
 
+import Prelude hiding (catch)
 import Distribution.PackageDescription
   ( PackageDescription(..), Library(..), BuildInfo(..), HookedBuildInfo
   , emptyHookedBuildInfo, emptyBuildInfo

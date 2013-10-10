@@ -41,8 +41,8 @@ Executable takusen_tests
   else
     -- If we want to build test exe, then it needs Takusen installed.
     Build-Depends:  takusen-oracle
-    Main-Is: Main.hs
-    Other-modules: 
+  Main-Is: Main.hs
+  Other-modules: 
         Database.Enumerator
       , Database.InternalEnumerator
       , Database.Util
@@ -58,7 +58,7 @@ Executable takusen_tests
       , Foreign.C.UTF8
       , Foreign.C.Test.UTF8
       , Test.MiniUnit
-  Build-Depends:  base          >= 4.6   && < 5
+  Build-Depends:  base          >= 4.5   && < 5
                 , mtl
                 , time
                 , old-time
@@ -75,7 +75,7 @@ Executable miniunit_tests
       Control.Exception.MonadIO
     , Test.MiniUnit
     , Test.MiniUnitTest
-  Build-Depends:  base          >= 4.6   && < 5
+  Build-Depends:  base          >= 4.5   && < 5
                 , mtl
   Other-Extensions: CPP DeriveDataTypeable ScopedTypeVariables
 

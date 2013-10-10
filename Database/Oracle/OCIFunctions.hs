@@ -29,7 +29,7 @@
 module Database.Oracle.OCIFunctions where
 
 
-import Prelude
+import Prelude hiding (catch)
 import Database.Oracle.OCIConstants
 import Database.Util
 import Foreign
