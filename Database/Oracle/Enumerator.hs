@@ -12,6 +12,11 @@
 
 {-# LANGUAGE OverlappingInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Database.Oracle.Enumerator
   ( Session, connect
@@ -43,6 +48,7 @@ import Data.IORef
 import Data.Int
 import Data.Time
 import System.IO (hPutStrLn, stderr)
+import System.Time
 
 
 -- --------------------------------------------------------------------
@@ -656,12 +662,12 @@ bindOutputMaybe sess stmt v pos = do
       buffer <- mallocForeignPtrBytes (bindBufferSize v)
       nullind <- mallocForeignPtr
       sizeind <- mallocForeignPtr
-      withForeignPtr buffer $ \bufptr -> do
-      withForeignPtr nullind $ \indptr -> do
-      withForeignPtr sizeind $ \szeptr -> do
-        poke (castPtr indptr) (bindNullInd v)
-        poke (castPtr szeptr) (bindDataSize v)  -- input size
-        bindWriteBuffer (castPtr bufptr) v
+      withForeignPtr buffer $ \bufptr ->
+        withForeignPtr nullind $ \indptr ->
+          withForeignPtr sizeind $ \szeptr -> do
+            poke (castPtr indptr) (bindNullInd v)
+            poke (castPtr szeptr) (bindDataSize v)  -- input size
+            bindWriteBuffer (castPtr bufptr) v
       bindOutputByPos sess stmt pos (nullind, buffer, sizeind) (bindBufferSize v) (bindType v)
       let
         colbuf = ColumnBuffer
