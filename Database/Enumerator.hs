@@ -45,7 +45,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FlexibleContexts #-}
-
+{-# LANGUAGE ScopedTypeVariables #-}
 
 
 module Database.Enumerator
@@ -112,19 +112,19 @@ module Database.Enumerator
 
   ) where
 
-import Prelude hiding (catch)
+import Prelude
 import Data.Dynamic
 import Data.IORef
-import Data.Time
+-- import Data.Time
 import Data.Maybe (fromMaybe, isNothing)
-import Control.Monad (liftM)
-import Control.Monad.Trans (liftIO)
+-- import Control.Monad (liftM)
+-- import Control.Monad.Trans (liftIO)
 import Control.Exception
 import Control.Monad.Fix
 import Control.Monad.Reader
 import Control.Exception.MonadIO
 import qualified Database.InternalEnumerator as IE
-import System.Time
+-- import System.Time
 
 -- -----------------------------------------------------------
 
@@ -444,8 +444,9 @@ instance (IE.DBType a q b, MonadIO m) =>
   iterApply q [buf] seed fn  = do
     v <- liftIO $ IE.fetchCol q buf
     fn v seed
-  allocBuffers q _ n = liftIO $ 
-        sequence [IE.allocBufferFor (undefined :: a) q n]
+  
+  allocBuffers r _ n = liftIO $ 
+    sequence [IE.allocBufferFor (undefined::a) r n]
 
 -- |This instance of the class implements the starting and continuation cases.
 
