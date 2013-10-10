@@ -38,9 +38,9 @@ Executable takusen_tests
     Buildable: False
   else
     -- If we want to build test exe, then it needs Takusen installed.
-  Build-Depends:  takusen-oracle
-  Main-Is: Main.hs
-  Other-modules: 
+    Build-Depends:  takusen-oracle
+    Main-Is: Main.hs
+    Other-modules: 
         Database.Enumerator
       , Database.InternalEnumerator
       , Database.Util
