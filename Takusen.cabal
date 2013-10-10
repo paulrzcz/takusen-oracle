@@ -17,6 +17,9 @@ Description:
     arbitrary SQL statements (currently strings, extensible to anything
     that can be converted to a string).
 
+    It is based on original Takusen library. It was just upgraded to support 
+    Oracle 12c instant client and GHC 7.6.3.
+
 Extra-tmp-files: 
       Database/Oracle/OCIFunctions_stub.c
       Database/Oracle/OCIFunctions_stub.h
@@ -35,8 +38,8 @@ Executable takusen_tests
     Buildable: False
   else
     -- If we want to build test exe, then it needs Takusen installed.
-    Build-Depends:  Takusen
-  Main-Is: Main.lhs
+  Build-Depends:  takusen-oracle
+  Main-Is: Main.hs
   Other-modules: 
         Database.Enumerator
       , Database.InternalEnumerator

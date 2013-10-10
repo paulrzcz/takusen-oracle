@@ -21,17 +21,16 @@
 --  > takusen oracle noperf "" "" dbname  -- no username, so os-authenticated
 --  > takusen mssql noperf user paswd dbname
 
-
 module Main (main) where
 
 
-import Database.Sqlite.Test.Enumerator as Sqlite
+-- import Database.Sqlite.Test.Enumerator as Sqlite
 import Database.Oracle.Test.Enumerator as Oracle
 --import Database.Test.MultiConnect as Multi
-import Database.ODBC.Test.Enumerator as ODBC
+-- import Database.ODBC.Test.Enumerator as ODBC
 import Database.Stub.Test.Enumerator as Stub
 --import Database.MSSqlServer.Test.Enumerator as MSSql
-import Database.PostgreSQL.Test.Enumerator as PGSql
+--import Database.PostgreSQL.Test.Enumerator as PGSql
 import System.Environment (getArgs)
 import Database.Test.Performance as Perf
 import Database.Test.Util as Util
