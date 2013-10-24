@@ -14,6 +14,7 @@ create a program that uses Takusen.
 
 Here's a little hello-world test case that uses Sqlite:
 
+```
 {-# LANGUAGE ScopedTypeVariables #-}
 module Main where
 import Database.Sqlite.Enumerator
@@ -24,9 +25,12 @@ main = flip catchDB reportRethrow $
     result <- doQuery (sql "select 'Hello world.'") iter ""
     liftIO (putStrLn result)
     )
+```
 
 If this is Main.hs, then
+```
   $ ghc --make Main -o hello
+```
 should build a "hello" executable.
 
 
