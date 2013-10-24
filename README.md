@@ -38,15 +38,10 @@ If it is not correct, then you are likely to see linker errors.
 
 The Cabal build script (Setup.hs) looks for various executables
 on your path, in order to configure, or validate the configuration.
-For example:
- - the Oracle configuration checks that sqlplus is available before continuing
- - The PostgreSQL configuration uses the pg_config program to get the library
-   and include directory locations.
+The Oracle configuration checks that sqlplus is available before continuing
 
 If you install a new back-end, you will need to re-run the installation
 process to be able to use it.
-
-
 
 Oracle gotchas on Windows
 -------------------------
