@@ -1,3 +1,5 @@
+Takusen Oracle is an Oracle access library. Like HSQL and HDBC, it supports arbitrary SQL statements (currently strings, extensible to anything that can be converted to a string).  Takusen's unique selling point is safety and efficiency. We statically ensure all acquired database resources - such as cursors, connections, and statement handles - are released, exactly once, at predictable times. Takusen Oracle can avoid loading the whole result set in memory, and so can handle queries returning millions of rows in constant space. Takusen also supports automatic marshalling and unmarshalling of results and query parameters. These benefits come from the design of query result processing around a left-fold enumerator.
+
 Installing
 ----------
 Prerequisites: GHC >= 7.6.3, Cabal >= 1.16
