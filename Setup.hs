@@ -18,9 +18,9 @@ import Distribution.Simple.Utils (warn, info, rawSystemStdout)
 import Distribution.Verbosity (Verbosity)
 
 import qualified System.Info (os)
-import System.Directory (canonicalizePath, removeFile)
+import System.Directory (canonicalizePath, removeFile, doesDirectoryExist)
 import System.Environment (getEnv)
-import System.FilePath (combine, dropFileName, FilePath, pathSeparators)
+import System.FilePath (combine, dropFileName, FilePath, pathSeparators, (</>))
 import Control.Monad(liftM)
 import Control.Exception (SomeException, try, catch)
 import Data.List (isInfixOf)
@@ -123,15 +123,26 @@ guardPath pathAction libName verbose resAction = do
 -- Header files are in: ORACLE_BASE\ORACLE_HOME\oci\include
 -- DLLs are in: ORACLE_BASE\ORACLE_HOME\bin
 --
--- For Unix:
+-- For Unix full install:
 -- Appendix B - OCI Demonstration Programs:
 -- http://download.oracle.com/docs/cd/B19306_01/appdev.102/b14250/ociabdem.htm#i459676
 -- Header files are in: $ORACLE_HOME/rdbms/public
--- Header files are in: $ORACLE_HOME/lib
+-- Object files are in: $ORACLE_HOME/lib
+--
+-- For Unix client only install:
+-- Header files are in: $ORACLE_HOME/oci/include
+-- Object files are in: $ORACLE_HOME
 
 configOracle verbose buildtools =
   guardProg sqlplusProgram buildtools $
   guardPath (maybeGetEnv "ORACLE_HOME") "Oracle" verbose $ \path -> do
+  let fullInstallDirs = ("lib", "rdbms/public")
+  isFullInstall <- doesDirectoryExist (path </> snd fullInstallDirs)
   let (libDir, incDir) =
-          if isWindows then ("bin", "oci/include") else ("", "sdk/include") -- ("lib", "rdbms/public")
+        if isWindows
+        then ("bin", "oci/include")
+        else if isFullInstall
+        then fullInstallDirs
+        else ("", "sdk/include")
   makeConfig path libDir incDir
+
