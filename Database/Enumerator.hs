@@ -119,6 +119,7 @@ import Data.IORef
 import Data.Maybe (fromMaybe, isNothing)
 -- import Control.Monad (liftM)
 -- import Control.Monad.Trans (liftIO)
+import Control.Applicative (Applicative)
 import Control.Exception
 import Control.Monad.Fix
 import Control.Monad.Reader
@@ -209,10 +210,10 @@ ignoreDBError n action = catchDBError n action (\e -> return undefined)
 
 newtype IE.ISession sess => DBM mark sess a = DBM (ReaderT sess IO a)
 #ifndef __HADDOCK__
-  deriving (Functor, Monad, MonadIO, MonadFix, MonadReader sess)
+  deriving (Functor, Monad, Applicative, MonadIO, MonadFix, MonadReader sess)
 #else
   -- Haddock can't cope with the "MonadReader sess" instance
-  deriving (Functor, Monad, MonadIO, MonadFix)
+  deriving (Functor, Monad, Applicative, MonadIO, MonadFix)
 #endif
 unDBM (DBM x) = x
 
