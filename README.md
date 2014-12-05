@@ -9,22 +9,22 @@ Using i.e. Writing data access code
 There are extensive instructions and examples in the Haddock docs
 for module Database.Enumerator:
 
-http://hackage.haskell.org/packages/archive/Takusen/0.8.6/doc/html/Database-Enumerator.html
+http://hackage.haskell.org/packages/archive/takusen-oracle/0.9.1/doc/html/Database-Enumerator.html
 
 This should give you most, if not all, of the information you need to
 create a program that uses Takusen.
 
-Here's a little hello-world test case that uses Sqlite:
+Here's a little hello-world test case that uses Oracle:
 
 ```
 {-# LANGUAGE ScopedTypeVariables #-}
 module Main where
-import Database.Sqlite.Enumerator
+import Database.Oracle.Enumerator
 import Control.Monad.Trans (liftIO)
 main = flip catchDB reportRethrow $
-  withSession (connect "sqlite_db") (do
+  withSession (connect "system" "system" "localhost/XE") (do
     let iter (s::String) (_::String) = result s
-    result <- doQuery (sql "select 'Hello world.'") iter ""
+    result <- doQuery (sql "select 'Hello world.' from DUAL") iter ""
     liftIO (putStrLn result)
     )
 ```
@@ -45,9 +45,6 @@ If it is not correct, then you are likely to see linker errors.
 The Cabal build script (Setup.hs) looks for various executables
 on your path, in order to configure, or validate the configuration.
 The Oracle configuration checks that sqlplus is available before continuing
-
-If you install a new back-end, you will need to re-run the installation
-process to be able to use it.
 
 Oracle gotchas on Windows
 -------------------------
