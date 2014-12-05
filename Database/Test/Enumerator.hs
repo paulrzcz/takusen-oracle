@@ -1,4 +1,4 @@
-
+{- 
 |
 Module      :  Database.Test.Enumerator
 Copyright   :  (c) 2004 Oleg Kiselyov, Alistair Bayley
@@ -18,6 +18,7 @@ Tests in this module are organised in groups of three/four functions:
 These have to be tied together by a function which uses backend-specific
 functions and types. See the various backend-specific test modules for examples.
 
+-}
 
 > {-# LANGUAGE OverlappingInstances #-}
 
