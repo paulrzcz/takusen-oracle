@@ -12,8 +12,9 @@
 
 module Foreign.C.Test.UTF8 where
 
-import Prelude hiding (catch)
-import Control.Exception.Extensible
+import Prelude
+import Control.Exception
+import Control.Monad(void)
 import Data.Char
 import Foreign.C.String
 import Foreign.C.UTF8
@@ -25,7 +26,7 @@ import Data.Word (Word8)
 
 
 runTest :: a -> [String] -> IO ()
-runTest _ args = runTestTT "UTF8" mkTestList >> return ()
+runTest _ args = void (runTestTT "UTF8" mkTestList)
 
 --mkTestList :: Test
 --mkTestList = TestList (map TestCase testlist)
@@ -43,12 +44,11 @@ testlist =
   ]
 
 
-instance QC.Arbitrary Char where
-  arbitrary = QC.choose (chr 1, chr 0x10FFFF)
-  coarbitrary = undefined
+-- instance QC.Arbitrary Char where
+  -- arbitrary = QC.choose (chr 1, chr 0x10FFFF)
 
 prop_roundtrip s = s == fromUTF8 (toUTF8 s)
-quickCheckUTF8RoundTrip = QC.test prop_roundtrip
+quickCheckUTF8RoundTrip = QC.quickCheck prop_roundtrip
 
 testUTF8RoundTrip = do
   utf8RoundTrip "1ByteLow"   0x000001 [0x01]

@@ -23,7 +23,6 @@
 module Main (main) where
 
 import Database.Oracle.Test.Enumerator as Oracle
-import Database.Stub.Test.Enumerator as Stub
 import System.Environment (getArgs)
 import Database.Test.Performance as Perf
 import Database.Test.Util as Util
