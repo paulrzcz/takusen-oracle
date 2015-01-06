@@ -1,7 +1,6 @@
 Name:           takusen-example
 Version:        0.0.1
 License:        BSD3
-License-file:   LICENSE
 Author:         Pavel Ryzhov
 Copyright:      2013, Pavel Ryzhov, Velrina s.r.o.
 Maintainer:     paul@paulrz.cz
@@ -9,7 +8,7 @@ Stability:      experimental
 Homepage:       https://github.com/paulrzcz/takusen-oracle.git
 Package-url:    https://github.com/paulrzcz/takusen-oracle.git
 Category:       Database
-Build-type:     Custom
+Build-type:     Simple
 Cabal-Version:  >= 1.16
 Synopsis:       Database library with left-fold interface for Oracle.
 Description:   
@@ -30,4 +29,3 @@ Executable takusen-example
                 , QuickCheck    ==2.*
                 , random
                 , takusen-oracle
-  Extensions: DeriveDataTypeable ScopedTypeVariables

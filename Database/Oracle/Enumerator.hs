@@ -464,7 +464,11 @@ instance Command CommandBind Session where
   executeCommand sess (CommandBind sqltext bas) = do
     let (PreparationA pa) = prepareStmt' 0 sqltext FreeWithQuery CommandType
     ps <- pa sess
-    bindRun sess ps bas (\(BoundStmt bs) -> getRowCount sess (stmtHandle bs))
+    bindRun sess ps bas (\(BoundStmt bs) -> do 
+      n <- getRowCount sess (stmtHandle bs)
+      closeStmt (stmtSession ps) (stmtHandle ps)
+      return n
+      )
 
 instance Command BoundStmt Session where
   executeCommand s (BoundStmt pstmt) =
