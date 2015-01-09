@@ -31,7 +31,7 @@ module Foreign.C.UTF8
   , lengthUTF8, fromUTF8, toUTF8
   ) where
 
-import Control.Monad (when, liftM)
+import Control.Monad (liftM)
 import Data.Bits
 import Data.Char
 import Data.Word (Word8)
@@ -40,14 +40,7 @@ import Foreign.C.String
 import Foreign.Ptr
 import Foreign.Marshal.Array
 import Foreign.Storable
-
-#ifdef __GLASGOW_HASKELL__
 import GHC.Base (unsafeChr)
-#else
-unsafeChr :: Int -> Char
-unsafeChr i = chr i
-#endif
-
 
 nullCChar :: CChar
 nullCChar = 0

@@ -42,7 +42,12 @@
 
 
 {-# LANGUAGE OverlappingInstances #-}
-
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Database.Oracle.Test.Enumerator (runTest) where
 
 import qualified Database.Oracle.Test.OCIFunctions as Low
@@ -71,7 +76,7 @@ testBody runPerf = do
 runPerformanceTests = do
   makeFixture execDrop execDDL_
   beginTransaction RepeatableRead
-  runTestTT "Oracle performance tests" (map (flip catchDB reportRethrow)
+  runTestTT "Oracle performance tests" (map (`catchDB` reportRethrow)
     [ timedSelect (prefetch 1000 sqlRows2Power20 []) 30 (2^20)
     , timedSelect (prefetch 1 sqlRows2Power17 []) 60 (2^17)
     , timedSelect (prefetch 1000 sqlRows2Power17 []) 6 (2^17)
@@ -268,11 +273,12 @@ selectNestedMultiResultSet _ = do
         then assertFailure "selectNestedMultiResultSet: inner value not 101 or 102"
         else return ()
       result' (i:acc)
-  withTransaction RepeatableRead $ do
-  withPreparedStatement (prepareQuery (sql q)) $ \pstmt -> do
-  withBoundStatement pstmt [] $ \bstmt -> do
-      rs <- doQuery bstmt iterMain []
-      return ()
+    in
+      withTransaction RepeatableRead $ do
+      withPreparedStatement (prepareQuery (sql q)) $ \pstmt -> do
+      withBoundStatement pstmt [] $ \bstmt -> do
+          rs <- doQuery bstmt iterMain []
+          return ()
 
 
 selectNestedMultiResultSet2 :: OracleFunctions -> DBM mark Session ()
@@ -297,10 +303,10 @@ selectNestedMultiResultSet2 _ = do
       assertBool "processInner2" (i < inner)
       result' (i:acc)
   withTransaction RepeatableRead $ do
-  withPreparedStatement (prepareQuery (sql q)) $ \pstmt -> do
-  withBoundStatement pstmt [] $ \bstmt -> do
-      rs <- doQuery bstmt iterMain []
-      assertEqual "selectNestedMultiResultSet" [9,8,7,6,5,4,3,2,1] (map fst rs)
+    withPreparedStatement (prepareQuery (sql q)) $ \pstmt -> do
+      withBoundStatement pstmt [] $ \bstmt -> do
+        rs <- doQuery bstmt iterMain []
+        assertEqual "selectNestedMultiResultSet" [9,8,7,6,5,4,3,2,1] (map fst rs)
       --print_ ""
 
 selectNestedMultiResultSet3 :: OracleFunctions -> DBM mark Session ()

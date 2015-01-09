@@ -110,6 +110,7 @@ guardProg prog tools action = if prog `isElem` tools then action else return emp
 -- Otherwise, run the second action over the FilePath.
 guardPath :: IO (Maybe FilePath) -> String -> Verbosity -> (FilePath -> IO BuildInfo) -> IO BuildInfo
 guardPath pathAction libName verbose resAction = do
+  putStrLn $ "Looking for "++libName++"..."
   mb <- pathAction
   case mb of
     Nothing -> warn verbose ("No " ++libName++ " library found") >> return emptyBuildInfo
@@ -138,11 +139,9 @@ configOracle verbose buildtools =
   guardPath (maybeGetEnv "ORACLE_HOME") "Oracle" verbose $ \path -> do
   let fullInstallDirs = ("lib", "rdbms/public")
   isFullInstall <- doesDirectoryExist (path </> snd fullInstallDirs)
-  let (libDir, incDir) =
-        if isWindows
-        then ("bin", "oci/include")
-        else if isFullInstall
-        then fullInstallDirs
-        else ("", "sdk/include")
+  let (libDir, incDir)
+        | isWindows = ("bin", "oci/include")
+        | isFullInstall = fullInstallDirs
+        | otherwise = ("", "sdk/include")
   makeConfig path libDir incDir
 
