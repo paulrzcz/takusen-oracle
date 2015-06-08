@@ -313,7 +313,7 @@ testForErrorWithPtr rc msg retval = do
 
 envCreate :: IO EnvHandle
 envCreate = alloca $ \ptr -> do
-  rc <- ociEnvCreate ptr oci_DEFAULT nullPtr nullFunPtr nullFunPtr nullFunPtr 0 nullPtr
+  rc <- ociEnvCreate ptr oci_THREADED nullPtr nullFunPtr nullFunPtr nullFunPtr 0 nullPtr
   testForErrorWithPtr rc "allocate initial end" ptr
 
 handleAlloc :: CInt -> OCIHandle -> IO OCIHandle

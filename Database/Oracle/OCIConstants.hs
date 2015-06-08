@@ -23,6 +23,8 @@ import Foreign.C.Types
 oci_DEFAULT :: CInt
 oci_DEFAULT = 0
 
+oci_THREADED :: CInt
+oci_THREADED = 1
 
 -- ** Handle types:
 
