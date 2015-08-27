@@ -1,13 +1,11 @@
-
 {-# LANGUAGE NoMonomorphismRestriction #-}
- 
+
 module Test.MiniUnitTest where
 
 import Test.MiniUnit
 import Data.IORef
 import Control.Exception.MonadIO
 import Control.Monad.Trans (liftIO)
-
 
 tests = do
   print_ "MiniUnit tests..."

@@ -12,22 +12,22 @@ Category:       Database
 Build-type:     Custom
 Cabal-Version:  >= 1.16
 Synopsis:       Database library with left-fold interface for Oracle.
-Description:   
+Description:
     Takusen-Oracle is a Oracle access library. Like HSQL and HDBC, we support
     arbitrary SQL statements (currently strings, extensible to anything
     that can be converted to a string).
 
-    It is based on original Takusen library. It was just upgraded to support 
+    It is based on original Takusen library. It was just upgraded to support
     Oracle 11gR2/12c instant client and GHC 7.4.2 and higher.
 
-Extra-tmp-files: 
+Extra-tmp-files:
       Database/Oracle/OCIFunctions_stub.c
       Database/Oracle/OCIFunctions_stub.h
 
 source-repository this
     type:       git
     location:   https://github.com/paulrzcz/takusen-oracle.git
-    tag:        0.9.0 
+    tag:        0.9.0
 
 Flag buildtests
   Description: Build test executables
@@ -42,7 +42,7 @@ Executable takusen_tests
     -- If we want to build test exe, then it needs Takusen installed.
     Build-Depends:  takusen-oracle
   Main-Is: Main.hs
-  Other-modules: 
+  Other-modules:
         Database.Enumerator
       , Database.InternalEnumerator
       , Database.Util
@@ -71,7 +71,7 @@ Executable miniunit_tests
   If !flag(buildtests)
     Buildable: False
   Main-Is: Test/Main.hs
-  Other-modules: 
+  Other-modules:
       Control.Exception.MonadIO
     , Test.MiniUnit
     , Test.MiniUnitTest
@@ -102,7 +102,7 @@ Library
                 , time
                 , old-time
   Other-Extensions: CPP DeriveDataTypeable
-  Other-modules: 
+  Other-modules:
         Database.InternalEnumerator
       -- Modules in Other-modules are passed to Haddock with --hide=<module-name>.
   Ghc-Prof-Options: -prof -auto-all
