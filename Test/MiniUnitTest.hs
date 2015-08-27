@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
 module Test.MiniUnitTest where
@@ -6,6 +7,9 @@ import Test.MiniUnit
 import Data.IORef
 import Control.Exception.MonadIO
 import Control.Monad.Trans (liftIO)
+#if MIN_VERSION_base(4,6,0)
+import Control.Exception (SomeException, catch)
+#endif
 
 tests = do
   print_ "MiniUnit tests..."
@@ -23,7 +27,12 @@ print_ s = liftIO (putStrLn s)
 test__assertFailure = catch
   (assertFailure "test__assertFailure"
     >> error "test__assertFailure: failed: exception not thrown.")
-  (\e -> print_ "test__assertFailure OK")
+  handleException
+  where
+#if MIN_VERSION_base(4,6,0)
+    handleException :: SomeException -> IO ()
+#endif
+    handleException _ = print_ "test__assertFailure OK"
 
 reportResult name result = do
   case result of
