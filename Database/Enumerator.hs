@@ -36,6 +36,7 @@
 
 
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE DatatypeContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverlappingInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
