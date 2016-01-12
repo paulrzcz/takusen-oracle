@@ -237,18 +237,19 @@ makeFixtureMultiResultSet4 = "CREATE OR REPLACE PROCEDURE takusenTestProc"
 --   return result
 
 selectMultiResultSet _ = do
-  let refcursor :: Maybe StmtHandle; refcursor = Just undefined
-  withTransaction RepeatableRead $ do
-  withPreparedStatement (prepareCommand (sql "begin takusenTestProc(:1,:2); end;")) $ \pstmt -> do
-  withBoundStatement pstmt [bindP (Out refcursor), bindP (Out refcursor)] $ \bstmt -> do
-    dummy <- doQuery bstmt iterMain ()
-    result1 <- doQuery (NextResultSet pstmt) iterRS1 []
-    assertEqual "selectMultiResultSet: RS1" [1,4,9,16,25,36,49,64,81] result1
-    result2 <- doQuery (NextResultSet pstmt) iterRS2 []
-    let expect = [(1,1,1),(2,4,8),(3,9,27),(4,16,64),(5,25,125),(6,36,216)
-          ,(7,49,343),(8,64,512),(9,81,729)]
-    assertEqual "selectMultiResultSet: RS2" expect result2
-    return ()
+  let refcursor :: Maybe StmtHandle
+      refcursor = Just undefined
+  withTransaction RepeatableRead $
+    withPreparedStatement (prepareCommand (sql "begin takusenTestProc(:1,:2); end;")) $ \pstmt ->
+      withBoundStatement pstmt [bindP (Out refcursor), bindP (Out refcursor)] $ \bstmt -> do
+        dummy <- doQuery bstmt iterMain ()
+        result1 <- doQuery (NextResultSet pstmt) iterRS1 []
+        assertEqual "selectMultiResultSet: RS1" [1,4,9,16,25,36,49,64,81] result1
+        result2 <- doQuery (NextResultSet pstmt) iterRS2 []
+        let expect = [(1,1,1),(2,4,8),(3,9,27),(4,16,64),(5,25,125),(6,36,216)
+                     ,(7,49,343),(8,64,512),(9,81,729)]
+        assertEqual "selectMultiResultSet: RS2" expect result2
+        return ()
   where
     iterMain :: (Monad m) => RefCursor StmtHandle -> RefCursor StmtHandle -> IterAct m ()
     iterMain c1 c2 acc = return (Left acc)
@@ -274,9 +275,9 @@ selectNestedMultiResultSet _ = do
         else return ()
       result' (i:acc)
     in
-      withTransaction RepeatableRead $ do
-      withPreparedStatement (prepareQuery (sql q)) $ \pstmt -> do
-      withBoundStatement pstmt [] $ \bstmt -> do
+      withTransaction RepeatableRead $
+      withPreparedStatement (prepareQuery (sql q)) $ \pstmt ->
+        withBoundStatement pstmt [] $ \bstmt -> do
           rs <- doQuery bstmt iterMain []
           return ()
 

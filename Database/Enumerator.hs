@@ -1,4 +1,3 @@
-
 -- |
 -- Module      :  Database.Enumerator
 -- Copyright   :  (c) 2004 Oleg Kiselyov, Alistair Bayley
@@ -37,6 +36,7 @@
 
 
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE DatatypeContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverlappingInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -201,7 +201,7 @@ ignoreDBError n action = catchDBError n action (\e -> return undefined)
 -- -- ** Session monad
 -- --------------------------------------------------------------------
 
--- The DBM data constructor is NOT exported. 
+-- The DBM data constructor is NOT exported.
 
 -- One may think to quantify over sess in |withSession|. We won't need
 -- any mark then, I gather.
@@ -225,13 +225,13 @@ instance IE.ISession si => CaughtMonadIO (DBM mark si) where
 -- | Typeable constraint is to prevent the leakage of Session and other
 -- marked objects.
 
-withSession :: (Typeable a, IE.ISession sess) => 
+withSession :: (Typeable a, IE.ISession sess) =>
     IE.ConnectA sess -> (forall mark. DBM mark sess a) -> IO a
-withSession (IE.ConnectA connecta) m = 
+withSession (IE.ConnectA connecta) m =
   bracket connecta IE.disconnect (runReaderT (unDBM m))
 
 
--- | Persistent database connections. 
+-- | Persistent database connections.
 -- This issue has been brought up by Shanky Surana. The following design
 -- is inspired by that exchange.
 
@@ -240,8 +240,8 @@ withSession (IE.ConnectA connecta) m =
 -- database interfaces. Alas, implementing persistent connection
 -- safely is another matter. The simplest design is like the following
 
---  > withContinuedSession :: (Typeable a, IE.ISession sess) => 
---  >     IE.ConnectA sess -> (forall mark. DBM mark sess a) -> 
+--  > withContinuedSession :: (Typeable a, IE.ISession sess) =>
+--  >     IE.ConnectA sess -> (forall mark. DBM mark sess a) ->
 --  >     IO (a, IE.ConnectA sess)
 --  > withContinuedSession (IE.ConnectA connecta) m = do
 --  >     conn <- connecta
@@ -279,12 +279,12 @@ withSession (IE.ConnectA connecta) m =
 
 -- etc. If we reuse a suspended connection or use a closed connection,
 -- we get a run-time (exception). That is of course not very
--- satisfactory - and yet better than a segmentation fault. 
+-- satisfactory - and yet better than a segmentation fault.
 
-withContinuedSession :: (Typeable a, IE.ISession sess) => 
-    IE.ConnectA sess -> (forall mark. DBM mark sess a) 
+withContinuedSession :: (Typeable a, IE.ISession sess) =>
+    IE.ConnectA sess -> (forall mark. DBM mark sess a)
     -> IO (a, IE.ConnectA sess)
-withContinuedSession (IE.ConnectA connecta) m = 
+withContinuedSession (IE.ConnectA connecta) m =
    do conn <- connecta  -- this invalidates connecta
       -- Note: if there was an error, then disconnect,
       -- but don't disconnect in the success case
@@ -418,7 +418,7 @@ withBoundStatement ::
   -- ^ action to run over bound statement
   -> DBM mark s a
 withBoundStatement (IE.PreparedStmt stmt) ba f =
-  DBM ( ask >>= \s -> 
+  DBM ( ask >>= \s ->
     lift $ IE.bindRun s stmt ba (\b -> runReaderT (unDBM (f b)) s))
 
 
@@ -445,8 +445,8 @@ instance (IE.DBType a q b, MonadIO m) =>
   iterApply q [buf] seed fn  = do
     v <- liftIO $ IE.fetchCol q buf
     fn v seed
-  
-  allocBuffers r _ n = liftIO $ 
+
+  allocBuffers r _ n = liftIO $
     sequence [IE.allocBufferFor (undefined::a) r n]
 
 -- |This instance of the class implements the starting and continuation cases.
@@ -536,7 +536,7 @@ openCursor stmt iteratee seed = do
         finalizer
         return (DBCursor ref)
     let
-      k' fni seed' = 
+      k' fni seed' =
         let
           k fni' seed'' = do
             let k'' flag = if flag then k' fni' seed'' else close seed''
@@ -598,7 +598,7 @@ cursorNext (DBCursor ref) = do
 
 -- Returns the cursor. The return value is usually ignored.
 -- This function is not available to the end user (i.e. not exported).
--- The cursor is closed automatically when its region exits. 
+-- The cursor is closed automatically when its region exits.
 
 cursorClose c@(DBCursor ref) = do
   (_, maybeF) <- liftIO $ readIORef ref
@@ -742,14 +742,14 @@ result' x = return (Right $! x)
 --    See more explanation and examples below in /Iteratee Functions/ and
 --    /Bind Parameters/ sections.
 
--- The first argument to 'Database.Enumerator.doQuery' must be an instance of  
+-- The first argument to 'Database.Enumerator.doQuery' must be an instance of
 -- 'Database.InternalEnumerator.Statement'.
 -- Each back-end will provide a useful set of @Statement@ instances
 -- and associated constructor functions for them.
 -- For example, currently all back-ends have:
 
 --   * for basic, all-text statements (no bind variables, default row-caching)
---     which can be used as queries or commands: 
+--     which can be used as queries or commands:
 
 --  >      sql "select ..."
 
@@ -936,7 +936,7 @@ result' x = return (Right $! x)
 -- it can't take polymorphic functions as arguments and return
 -- polymorphic functions.
 
--- Here's an example where ($) fails: 
+-- Here's an example where ($) fails:
 -- we supply a simple test program in the README file.
 -- If you change the @withSession@ line to use ($), like so
 -- (and remove the matching end-parenthese):
@@ -1003,7 +1003,7 @@ result' x = return (Right $! x)
 -- as the library needs to do something different depending on whether or not the
 -- statement returns a result-set.
 
--- For queries with large result-sets, we provide 
+-- For queries with large result-sets, we provide
 -- 'Database.PostgreSQL.Enumerator.prepareLargeQuery',
 -- which takes an extra parameter: the number of rows to prefetch
 -- in a network call to the server.
@@ -1313,4 +1313,3 @@ result' x = return (Right $! x)
 --  - /emphasised text/
 --  - links: "Another.Module", 'someIdentifier' (same module),
 --    'Another.Module.someIdentifier', <http:/www.haskell.org/haddock>
-
