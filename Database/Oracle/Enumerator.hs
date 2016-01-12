@@ -776,6 +776,7 @@ withBinaryValue fn v pok action =
   pok p (fn v)
   action (castPtr p)
 
+clength :: Foldable m => m a -> Integer
 clength = fromIntegral . length
 
 toCInt :: Int -> CInt; toCInt = fromIntegral
