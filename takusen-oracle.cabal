@@ -95,6 +95,7 @@ Library
     Extra-Libraries: oci
   Else
     Extra-Libraries: clntsh
+  Extra-Lib-Dirs: /Users/paul/instantclient
 
   Build-Depends:  base
                 , mtl

@@ -19,6 +19,7 @@ flags:
 # Extra package databases containing global packages
 extra-package-dbs: []
 
+# specify the oracle directory with libraries
 extra-lib-dirs:
  - /Users/paul/instantclient
 
