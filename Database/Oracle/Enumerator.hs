@@ -149,7 +149,7 @@ printError s = hPutStrLn stderr s
 -- These wrappers ensure that only DBExceptions are thrown,
 -- and never OCIExceptions.
 
-data Session = Session 
+data Session = Session
   { envHandle :: EnvHandle
   , errorHandle :: ErrorHandle
   , connHandle :: ConnHandle
@@ -266,7 +266,7 @@ logon user pswd dbname env err = inOCI env err $ do
     startServerSession user pswd env err server
 
 
-logoff :: ErrorHandle -> ConnHandle -> IO ()  
+logoff :: ErrorHandle -> ConnHandle -> IO ()
 logoff err conn = catchOCI (do
     session <- OCI.getHandleAttr err (castPtr conn) oci_HTYPE_SVCCTX oci_ATTR_SESSION
     server <- OCI.getHandleAttr err (castPtr conn) oci_HTYPE_SVCCTX oci_ATTR_SERVER
@@ -311,7 +311,7 @@ dbDisconnect session = do
 -- there's no equivalent for ReadUncommitted.
 
 beginTrans :: Session -> IsolationLevel -> IO ()
-beginTrans session isolation = inSession session 
+beginTrans session isolation = inSession session
   (\_ err conn -> do
       case isolation of
         ReadUncommitted -> OCI.beginTrans err conn oci_TRANS_READWRITE
@@ -464,7 +464,7 @@ instance Command CommandBind Session where
   executeCommand sess (CommandBind sqltext bas) = do
     let (PreparationA pa) = prepareStmt' 0 sqltext FreeWithQuery CommandType
     ps <- pa sess
-    bindRun sess ps bas (\(BoundStmt bs) -> do 
+    bindRun sess ps bas (\(BoundStmt bs) -> do
       n <- getRowCount sess (stmtHandle bs)
       closeStmt (stmtSession ps) (stmtHandle ps)
       return n
@@ -711,7 +711,7 @@ class OracleBind a where
 
 instance OracleBind a => OracleBind (Maybe a) where
   bindWithValue (Just v) a = bindWithValue v a
-  bindWithValue Nothing a = return ()
+  bindWithValue Nothing a = a nullPtr
   bindWriteBuffer b (Just v) = bindWriteBuffer b v
   bindWriteBuffer b Nothing = return ()
   bindDataSize (Just v) = bindDataSize v
@@ -727,7 +727,7 @@ instance OracleBind a => OracleBind (Maybe a) where
 instance OracleBind String where
   -- FIXME  should these be withUTF8String{Len} ?
   bindWithValue v a = withCString v (\p -> a (castPtr p))
-  bindWriteBuffer b s = withCStringLen s (\(p,l) -> 
+  bindWriteBuffer b s = withCStringLen s (\(p,l) ->
     copyBytes (castPtr b) p (1+l))
   bindDataSize s = fromIntegral (length s)
   bindBufferSize _ = 32000
@@ -884,7 +884,7 @@ instance Statement CommandBind Session Query where
     return (Query pstmt sess (Just pstmt))
 
 
-data ColumnBuffer = ColumnBuffer 
+data ColumnBuffer = ColumnBuffer
    { colBufBufferFPtr :: OCI.ColumnResultBuffer
    , colBufNullFPtr :: ForeignPtr CShort
    , colBufSizeFPtr :: ForeignPtr CUShort
