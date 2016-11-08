@@ -27,7 +27,7 @@ Extra-tmp-files:
 source-repository this
     type:       git
     location:   https://github.com/paulrzcz/takusen-oracle.git
-    tag:        0.9.0
+    tag:        0.9.4.1
 
 Flag buildtests
   Description: Build test executables
@@ -91,7 +91,6 @@ Library
         Database.Oracle.Enumerator
       , Database.Oracle.OCIConstants
       , Database.Oracle.OCIFunctions
-  Build-Tools: sqlplus
   If os(windows)
     Extra-Libraries: oci
   Else
@@ -104,5 +103,3 @@ Library
   Other-Extensions: CPP DeriveDataTypeable
   Other-modules:
         Database.InternalEnumerator
-      -- Modules in Other-modules are passed to Haddock with --hide=<module-name>.
-  Ghc-Prof-Options: -prof -auto-all

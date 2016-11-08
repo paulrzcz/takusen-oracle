@@ -20,7 +20,7 @@ flags:
 extra-package-dbs: []
 
 extra-lib-dirs:
-- /Users/paul/instantclient
+ - /Users/paul/instantclient
 
 # Control whether we use the GHC we find on the path
 # system-ghc: true
