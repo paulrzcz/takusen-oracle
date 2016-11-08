@@ -42,9 +42,7 @@ Just as with ensuring that your path is correctly set when building Takusen,
 you must also ensure it is correctly set when building your programs.
 If it is not correct, then you are likely to see linker errors.
 
-The Cabal build script (Setup.hs) looks for various executables
-on your path, in order to configure, or validate the configuration.
-The Oracle configuration checks that sqlplus is available before continuing
+For successful building of the library, you should set `Extra-Lib-Dirs` to your Oracle home lib directory.
 
 Oracle gotchas on Windows
 -------------------------
