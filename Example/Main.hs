@@ -1,19 +1,19 @@
+{-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Main where
 
-import Database.Oracle.Enumerator
+import           Database.Oracle.Enumerator
 
 main :: IO ()
-main = loop 0 $ connect "system" "manager" "localhost/XE"
+main = loop 0 $ connect "cpf" "cpf" "oracle/ORA11G"
     where loop i dbh = do
               (_, newdbh) <- withContinuedSession dbh $ do
                   execDDL qCreate
                   _ <- execDML qInsert
                   execDDL qDrop
                   commit
-              putStrLn (show i)
+              print i
               loop (i+1) newdbh
 
 qCreate = sql "create global temporary table callRows (id NUMBER) on commit delete rows"
