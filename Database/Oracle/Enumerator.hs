@@ -298,7 +298,6 @@ dbDisconnect session = do
   logoff err conn
   dispose err
   dispose env
-  OCI.terminate
 
 
 -- |Oracle only supports ReadCommitted and Serialisable.
