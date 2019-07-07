@@ -1,5 +1,5 @@
 Name:           takusen-oracle
-Version:        0.9.4.1
+Version:        0.9.4.2
 License:        BSD3
 License-file:   LICENSE
 Author:         Alistair Bayley, Oleg Kiselyov, Pavel Ryzhov
@@ -27,7 +27,7 @@ Extra-tmp-files:
 source-repository this
     type:       git
     location:   https://github.com/paulrzcz/takusen-oracle.git
-    tag:        0.9.4.1
+    tag:        0.9.4.2
 
 Flag buildtests
   Description: Build test executables
