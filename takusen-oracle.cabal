@@ -1,6 +1,7 @@
+Cabal-Version:  3.0
 Name:           takusen-oracle
 Version:        0.9.4.1
-License:        BSD3
+License:        BSD-3-Clause
 License-file:   LICENSE
 Author:         Alistair Bayley, Oleg Kiselyov, Pavel Ryzhov
 Copyright:      2003-2009, Alistair Bayley, Oleg Kiselyov, 2013, Pavel Ryzhov
@@ -9,8 +10,7 @@ Stability:      experimental
 Homepage:       https://github.com/paulrzcz/takusen-oracle.git
 Package-url:    https://github.com/paulrzcz/takusen-oracle.git
 Category:       Database
-Build-type:     Custom
-Cabal-Version:  >= 1.16
+Build-type:     Simple
 Synopsis:       Database library with left-fold interface for Oracle.
 Description:
     Takusen-Oracle is a Oracle access library. Like HSQL and HDBC, we support
@@ -27,7 +27,7 @@ Extra-tmp-files:
 source-repository this
     type:       git
     location:   https://github.com/paulrzcz/takusen-oracle.git
-    tag:        0.9.4.1
+    tag:        0.10.0
 
 Flag buildtests
   Description: Build test executables
@@ -64,7 +64,7 @@ Executable takusen_tests
                 , old-time
                 , QuickCheck    ==2.*
                 , random
-  Extensions: CPP DeriveDataTypeable ScopedTypeVariables
+  Other-Extensions: CPP DeriveDataTypeable ScopedTypeVariables
 
 Executable miniunit_tests
   Default-Language: Haskell2010
