@@ -72,7 +72,7 @@ Executable takusen_tests
                 , old-time
                 , QuickCheck    ==2.*
                 , random
-  Extensions: CPP DeriveDataTypeable ScopedTypeVariables
+  default-extensions: CPP DeriveDataTypeable ScopedTypeVariables
 
 Executable miniunit_tests
   Default-Language: Haskell2010
