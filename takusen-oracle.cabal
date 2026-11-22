@@ -105,7 +105,7 @@ Library
     Extra-Libraries: clntsh
   Extra-Lib-Dirs: /Users/paul/instantclient
 
-  Build-Depends:  base
+  Build-Depends:  base >= 4.5 && < 5
                 , mtl
                 , time
                 , old-time
