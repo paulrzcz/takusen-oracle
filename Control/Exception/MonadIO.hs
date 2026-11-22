@@ -6,6 +6,7 @@ module Control.Exception.MonadIO
 ) where
 
 import Control.Monad.Trans
+import Control.Monad (liftM)
 import Control.Exception
 import Control.Monad.Reader
 

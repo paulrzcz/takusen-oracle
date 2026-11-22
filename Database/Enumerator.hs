@@ -117,7 +117,7 @@ import Data.Dynamic
 import Data.IORef
 -- import Data.Time
 import Data.Maybe (fromMaybe, isNothing)
--- import Control.Monad (liftM)
+import Control.Monad (liftM, when, void)
 -- import Control.Monad.Trans (liftIO)
 import Control.Applicative (Applicative)
 import Control.Exception

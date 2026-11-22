@@ -1,10 +1,12 @@
 
 {-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE ScopedTypeVariables #-}
  
 module Test.MiniUnitTest where
 
 import Test.MiniUnit
 import Data.IORef
+import Control.Exception (catch, SomeException)
 import Control.Exception.MonadIO
 import Control.Monad.Trans (liftIO)
 
@@ -25,7 +27,7 @@ print_ s = liftIO (putStrLn s)
 test__assertFailure = catch
   (assertFailure "test__assertFailure"
     >> error "test__assertFailure: failed: exception not thrown.")
-  (\e -> print_ "test__assertFailure OK")
+  (\(e :: SomeException) -> print_ "test__assertFailure OK")
 
 reportResult name result = do
   case result of

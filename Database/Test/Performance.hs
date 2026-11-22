@@ -9,7 +9,7 @@ Portability :  non-portable
 Performance tests. Currently just tests large result sets.
 -}
 
-{-# LANGUAGE OverlappingInstances #-}
+{-# LANGUAGE OverlappingInstances, FlexibleContexts #-}
 
 module Database.Test.Performance where
 

@@ -37,7 +37,7 @@ import Foreign.C
 import Control.Monad
 import Control.Exception
 import Data.Dynamic
-import Data.Time
+import Data.Time hiding (Sunday)
 import System.Time
 
 

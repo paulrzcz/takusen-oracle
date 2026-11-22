@@ -22,7 +22,7 @@ import Control.Monad.Reader
 import Data.Int
 import Data.List
 import Data.Char
-import Data.Time
+import Data.Time hiding (Sunday)
 import Data.Word (Word8)
 import Foreign.Ptr (Ptr, castPtr)
 import Foreign.Marshal.Array (peekArray)
