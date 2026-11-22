@@ -67,11 +67,11 @@ Executable takusen_tests
       , Foreign.C.Test.UTF8
       , Test.MiniUnit
   Build-Depends:  base          >= 4.5   && < 5
-                , mtl
-                , time
-                , old-time
+                , mtl           >= 2.2   && < 2.4
+                , time          >= 1.9   && < 1.15
+                , old-time      >= 1.0   && < 1.2
                 , QuickCheck    ==2.*
-                , random
+                , random        >= 1.2   && < 1.4
   default-extensions: CPP DeriveDataTypeable ScopedTypeVariables
 
 Executable miniunit_tests
@@ -84,7 +84,7 @@ Executable miniunit_tests
     , Test.MiniUnit
     , Test.MiniUnitTest
   Build-Depends:  base          >= 4.5   && < 5
-                , mtl
+                , mtl           >= 2.2   && < 2.4
   Other-Extensions: CPP DeriveDataTypeable ScopedTypeVariables
 
 Library
@@ -106,9 +106,9 @@ Library
   Extra-Lib-Dirs: /Users/paul/instantclient
 
   Build-Depends:  base >= 4.5 && < 5
-                , mtl
-                , time
-                , old-time
+                , mtl      >= 2.2 && < 2.4
+                , time     >= 1.9 && < 1.15
+                , old-time >= 1.0 && < 1.2
   Other-Extensions: CPP DeriveDataTypeable
   Other-modules:
         Database.InternalEnumerator
